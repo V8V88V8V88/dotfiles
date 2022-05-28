@@ -15,5 +15,3 @@ alias nuke="sudo pacman -Runs"
 alias n="neofetch"
 alias p="poweroff"
 alias r="reboot"
-
-pfetch
