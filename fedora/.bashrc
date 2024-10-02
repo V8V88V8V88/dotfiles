@@ -23,7 +23,7 @@ unset rc
 alias u="sudo dnf update -y"
 alias i="sudo dnf install -y"
 alias nuke="sudo dnf remove -y"
-alias n="neofetch"
+alias n="fastfetch"
 alias p="poweroff"
 alias r="reboot"
 alias c="sudo dnf clean all"
