@@ -18,6 +18,8 @@ if [ -d ~/.bashrc.d ]; then
 fi
 unset rc
 
+. "$HOME/.cargo/env"
+
 alias u="sudo dnf update -y"
 alias i="sudo dnf install -y"
 alias nuke="sudo dnf remove -y"
