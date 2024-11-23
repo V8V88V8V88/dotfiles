@@ -14,3 +14,7 @@ function r; reboot; end
 function c; sudo dnf clean all; end
 function m; mkdir $argv; end
 function fu; flatpak update; end
+
+
+# Set the environment variable for Wayland
+set -x ELECTRON_OZONE_PLATFORM_HINT auto
