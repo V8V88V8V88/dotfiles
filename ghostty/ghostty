@@ -1,0 +1,7 @@
+theme = "lovelace"
+window-theme = ghostty
+adw-toolbar-style = flat
+
+
+keybind = ctrl+t=new_tab
+keybind = ctrl+w=close_window
