@@ -18,3 +18,14 @@ function fu; flatpak update; end
 
 # Set the environment variable for Wayland
 set -x ELECTRON_OZONE_PLATFORM_HINT auto
+set -Ux QT_QPA_PLATFORM wayland
+set -Ux SDL_VIDEODRIVER wayland
+set -Ux QT_WAYLAND_DISABLE_WINDOWDECORATION 0
+
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"set --export PATH $BUN_INSTALL/bin $PATH
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
