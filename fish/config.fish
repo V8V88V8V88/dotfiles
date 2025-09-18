@@ -39,3 +39,7 @@ function cursor
     nohup /home/v8v88v8v88/.local/bin/Cursor $argv >/dev/null 2>&1 & disown
 end
 set -gx PATH $HOME/.local/bin $PATH
+
+# graphics drivers
+set -gx LIBVA_DRIVER_NAME iHD
+set -gx MESA_LOADER_DRIVER_OVERRIDE iris
