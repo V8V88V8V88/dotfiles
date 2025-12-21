@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Trash
+Exec=nautilus --select trash:///
+Icon=user-trash
+StartupWMClass=trash-dash2dock-lite
+Actions=trash
+
+[Desktop Action trash]
+Name=Empty Trash
+Exec=rm -rf "/home/v8v88v8v88/.local/share/Trash"
+Terminal=true
