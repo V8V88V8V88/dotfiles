@@ -1,0 +1,5 @@
+{
+  "tailscale": {
+    "enabled": true
+  }
+}
