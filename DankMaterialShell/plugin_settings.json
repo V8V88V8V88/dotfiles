@@ -1,5 +1,12 @@
 {
   "tailscale": {
     "enabled": true
+  },
+  "dankBatteryAlerts": {
+    "enabled": true
+  },
+  "emojiLauncher": {
+    "enabled": true,
+    "recentEmojis": ",😠,󰨵"
   }
 }

@@ -1,0 +1,25 @@
+// DMS Window Rules - Managed by DankMaterialShell
+// Do not edit manually - changes may be overwritten
+
+// @id=wr_1783055928601543388 @name=zen
+window-rule {
+    match app-id="^zen$"
+    open-maximized true
+}
+
+// @id=dms-floating-windows @name=DMS Floating Windows
+window-rule {
+    match app-id="^com.danklinux.dms$"
+    open-floating true
+}
+
+// @id=wr_1789572083889438699 @name=helium
+window-rule {
+    match app-id="^helium$"
+    opacity 1.00
+}
+
+// @id=wr_1790309418716945166 @name=org.hitchhiker-linux.eva
+window-rule {
+    match app-id="^org.hitchhiker-linux.eva$" is-floating=true
+}

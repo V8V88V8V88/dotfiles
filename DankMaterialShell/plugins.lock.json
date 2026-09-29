@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "dankAudioVisualizer": {
+      "repo": "https://github.com/odtgit/DankAudioVisualizer",
+      "commit": "25424e8d570e000f4ab086c9e5e1122180861a65"
+    },
+    "emojiLauncher": {
+      "repo": "https://github.com/devnullvoid/dms-emoji-launcher",
+      "commit": "8ff394e3ddfcb2fd755ed2e7b4c6f01f3e26e596"
+    }
+  }
+}
