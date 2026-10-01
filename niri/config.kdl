@@ -192,38 +192,58 @@ environment {
 hotkey-overlay {
     skip-at-startup
 }
+
+// Compositor blur for DMS surfaces and windows. passes/offset stay at niri's defaults
+// (3, 3: Fibonacci); saturation = phi to match the golden-ratio opacity scale.
+blur {
+    passes 3
+    offset 3.0
+    noise 0.02
+    saturation 1.618
+}
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+// macOS/GNOME-like motion: critically damped springs (damping 1.0 = no bounce/overshoot),
+// a touch softer than niri's defaults, and Apple's "fluid" decelerate curve for open/close.
 animations {
+    // speed: 1/phi ~ 0.618, i.e. ~38% faster than the values below
+    slowdown 0.618
+
     workspace-switch {
-        spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
     }
     window-open {
-        duration-ms 150
-        curve "ease-out-expo"
+        duration-ms 250
+        curve "cubic-bezier" 0.32 0.72 0 1
     }
     window-close {
-        duration-ms 150
-        curve "ease-out-quad"
+        duration-ms 200
+        curve "cubic-bezier" 0.32 0.72 0 1
     }
     horizontal-view-movement {
-        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+        spring damping-ratio=1.0 stiffness=700 epsilon=0.0001
     }
     window-movement {
-        spring damping-ratio=0.75 stiffness=323 epsilon=0.0001
+        spring damping-ratio=1.0 stiffness=700 epsilon=0.0001
     }
     window-resize {
-        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+        spring damping-ratio=1.0 stiffness=700 epsilon=0.0001
     }
     config-notification-open-close {
-        spring damping-ratio=0.65 stiffness=923 epsilon=0.001
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.001
+    }
+    exit-confirmation-open-close {
+        spring damping-ratio=1.0 stiffness=600 epsilon=0.01
     }
     screenshot-ui-open {
-        duration-ms 200
-        curve "ease-out-quad"
+        duration-ms 250
+        curve "cubic-bezier" 0.32 0.72 0 1
     }
     overview-open-close {
-        spring damping-ratio=0.85 stiffness=800 epsilon=0.0001
+        spring damping-ratio=1.0 stiffness=700 epsilon=0.0001
+    }
+    recent-windows-close {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.001
     }
 }
 // Window rules let you adjust behavior for individual windows.
@@ -311,20 +331,31 @@ include "dms/alttab.kdl"
 include "dms/binds.kdl"
 include "dms/outputs.kdl"
 include "dms/cursor.kdl"
-
-include "dms/windowrules.kdl"
+// after the DMS includes so this overrides their generated focus-ring width
+include "focus.kdl"
 
 window-rule {
     geometry-corner-radius 16
     clip-to-geometry true
 
-    opacity 0.9
+    // opacity on the same golden-ratio scale as DMS: focused 1 - phi^-5, unfocused 1 - phi^-4
+    opacity 0.910
 
+    // xray: blur the wallpaper once and reuse it for every window. Non-xray blur is
+    // re-rendered per window every frame and drops out during open/close animations (stutter).
     background-effect {
       blur true
-      xray false
+      xray true
     }
 }
+
+window-rule {
+    match is-focused=false
+    opacity 0.854
+}
+
+// after the global rules above, so per-app DMS rules (e.g. opaque helium) take precedence
+include "dms/windowrules.kdl"
 
 window-rule {
     match app-id="" title=".*Zen*"
@@ -342,6 +373,7 @@ layer-rule {
     }
 }
 
+// DMS surfaces blur what's actually behind them (the window underneath), not the wallpaper
 layer-rule {
     match namespace=r#"^dms:.*"#
     background-effect {

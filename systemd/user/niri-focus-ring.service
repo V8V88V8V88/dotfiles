@@ -1,0 +1,6 @@
+[Unit]
+Description=Write niri focus ring color with reduced opacity
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/niri-focus-ring

@@ -1,0 +1,8 @@
+[Unit]
+Description=Regenerate the niri focus ring when DMS changes theme colors
+
+[Path]
+PathChanged=%h/.config/niri/dms/colors.kdl
+
+[Install]
+WantedBy=default.target
