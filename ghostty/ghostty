@@ -3,11 +3,10 @@ font-size = 12
 
 # Window Configuration
 window-decoration = false
-window-padding-x = 12
-window-padding-y = 12
-# was 0.88; golden scale 1 - phi^-5
-background-opacity = 0.910
-background-blur-radius = 32
+window-padding-x = 16
+window-padding-y = 16
+background-opacity = 0.76
+background-blur-radius = 60
 
 # Cursor Configuration
 cursor-style = block

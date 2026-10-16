@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+here=$(cd "$(dirname "$0")/.." && pwd)
+dst="$HOME/.config/quickshell/dms"
+[[ -e $dst ]] && mv "$dst" "$dst.old.$(date +%s)"
+cp -r /usr/share/quickshell/dms "$dst"
+patch -p1 -d "$dst" < "$here/quickshell/dms.patch"

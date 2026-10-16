@@ -1,0 +1,262 @@
+diff -ru a/Common/Theme.qml b/Common/Theme.qml
+--- a/Common/Theme.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Common/Theme.qml	2026-10-16 17:13:42.767782335 +0530
+@@ -1205,7 +1205,7 @@
+             return 1.0;
+         if (isConnectedEffect)
+             return SettingsData.frameOpacity !== undefined ? SettingsData.frameOpacity : 1.0;
+-        return SettingsData.popupTransparency !== undefined ? SettingsData.popupTransparency : 1.0;
++        return (SettingsData.popupTransparency !== undefined ? SettingsData.popupTransparency : 1.0) * (isLightMode ? 0.85 : 0.72);
+     }
+ 
+     function screenTransition() {
+diff -ru a/DankCommon/Widgets/StyledText.qml b/DankCommon/Widgets/StyledText.qml
+--- a/DankCommon/Widgets/StyledText.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/DankCommon/Widgets/StyledText.qml	2026-10-16 17:13:42.770506326 +0530
+@@ -41,7 +41,18 @@
+     color: Style.surfaceText
+     font.pixelSize: Appearance.fontSize.normal
+     font.family: resolvedFontFamily
+-    font.weight: Style.fontWeight
++    property bool _inBar: false
++    font.weight: _inBar ? Font.DemiBold : Style.fontWeight
++    Component.onCompleted: {
++        for (let p = parent; p; p = p.parent) {
++            const n = p.objectName;
++            if (n === "leftSection" || n === "centerSection" || n === "rightSection") {
++                _inBar = true;
++                color = Qt.binding(() => Style.surfaceText.hslLightness > 0.5 ? "#ffffff" : Style.surfaceText);
++                return;
++            }
++        }
++    }
+     textFormat: Text.PlainText
+     wrapMode: Text.WordWrap
+     elide: Text.ElideRight
+diff -ru a/Modals/DankLauncherV2/SpotlightLauncherContent.qml b/Modals/DankLauncherV2/SpotlightLauncherContent.qml
+--- a/Modals/DankLauncherV2/SpotlightLauncherContent.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modals/DankLauncherV2/SpotlightLauncherContent.qml	2026-10-16 17:13:42.773605629 +0530
+@@ -35,9 +35,7 @@
+     readonly property real _searchSurfaceAlpha: {
+         if (Theme.transparentBlurLayers)
+             return _hasQuery ? 0.34 : 0.28;
+-        if (Theme.blurForegroundLayers)
+-            return Math.max(Theme.popupTransparency, _hasQuery ? 0.68 : 0.74);
+-        return _hasQuery ? Theme.popupTransparency : Math.max(0.68, Theme.popupTransparency * 0.9);
++        return Theme.popupTransparency;
+     }
+     readonly property color _searchSurfaceColor: Theme.withAlpha(_hasQuery ? Theme.surfaceContainerHigh : Theme.surfaceContainer, _searchSurfaceAlpha)
+     readonly property color _searchWellColor: {
+diff -ru a/Modals/DankLauncherV2/SpotlightResultRow.qml b/Modals/DankLauncherV2/SpotlightResultRow.qml
+--- a/Modals/DankLauncherV2/SpotlightResultRow.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modals/DankLauncherV2/SpotlightResultRow.qml	2026-10-16 17:13:42.771782345 +0530
+@@ -127,16 +127,15 @@
+         anchors.left: parent.left
+         anchors.leftMargin: Theme.spacingS
+         anchors.verticalCenter: parent.verticalCenter
+-        color: root.isSelected ? Theme.primaryContainer : Theme.surfaceContainerHigh
+-        border.color: Theme.withAlpha(root.isSelected ? Theme.primary : Theme.outline, root.isSelected ? 0.28 : 0.12)
+-        border.width: 1
++        color: "transparent"
++        border.width: 0
+ 
+         AppIconRenderer {
+             anchors.centerIn: parent
+-            width: 30
+-            height: 30
++            width: 40
++            height: 40
+             iconValue: root.iconValue
+-            iconSize: 30
++            iconSize: 40
+             fallbackText: (root.item?.name?.length > 0) ? root.item.name.charAt(0).toUpperCase() : "?"
+             materialIconSizeAdjustment: 10
+         }
+diff -ru a/Modules/BuiltinDesktopPlugins/SystemMonitorWidget.qml b/Modules/BuiltinDesktopPlugins/SystemMonitorWidget.qml
+--- a/Modules/BuiltinDesktopPlugins/SystemMonitorWidget.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/BuiltinDesktopPlugins/SystemMonitorWidget.qml	2026-10-16 17:02:42.803057314 +0530
+@@ -40,7 +40,7 @@
+ 
+     enabled: isInstance ? (instanceData?.enabled ?? true) : SettingsData.systemMonitorEnabled
+     property bool showHeader: isInstance ? (cfg.showHeader ?? true) : SettingsData.systemMonitorShowHeader
+-    property real transparency: isInstance ? (cfg.transparency ?? 0.8) : SettingsData.systemMonitorTransparency
++    property real transparency: (isInstance ? (cfg.transparency ?? 0.8) : SettingsData.systemMonitorTransparency) * (Theme.isLightMode ? 0.85 : 0.72)
+     property string colorMode: isInstance ? (cfg.colorMode ?? "primary") : SettingsData.systemMonitorColorMode
+     property color customColor: isInstance ? (cfg.customColor ?? "#ffffff") : SettingsData.systemMonitorCustomColor
+     property bool showCpu: isInstance ? (cfg.showCpu ?? true) : SettingsData.systemMonitorShowCpu
+diff -ru a/Modules/DankBar/BarCanvas.qml b/Modules/DankBar/BarCanvas.qml
+--- a/Modules/DankBar/BarCanvas.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/DankBar/BarCanvas.qml	2026-10-16 17:13:42.774782352 +0530
+@@ -48,6 +48,8 @@
+             return 0;
+         if (barWindow.flattenForMaximizedWindow && barWindow.hasMaximizedToplevel)
+             return 0;
++        if (barWindow.hasWorkspaceWindows)
++            return 0;
+         return Theme.cornerRadius;
+     }
+ 
+@@ -62,7 +64,7 @@
+     // M3 elevation shadow — Level 2 baseline (navigation bar), with per-bar override support
+     readonly property bool hasPerBarOverride: (barConfig?.shadowIntensity ?? 0) > 0
+     readonly property var elevLevel: Theme.elevationLevel2
+-    readonly property bool shadowEnabled: Theme.elevationEnabled && (typeof SettingsData !== "undefined" ? (SettingsData.barElevationEnabled ?? true) : false)
++    readonly property bool shadowEnabled: Theme.elevationEnabled && (typeof SettingsData !== "undefined" ? (SettingsData.barElevationEnabled ?? true) : false) && barWindow.hasWorkspaceWindows
+     readonly property string autoBarShadowDirection: isTop ? "top" : (isBottom ? "bottom" : (isLeft ? "left" : (isRight ? "right" : "top")))
+     readonly property string globalShadowDirection: Theme.elevationLightDirection === "autoBar" ? autoBarShadowDirection : Theme.elevationLightDirection
+     readonly property string perBarShadowDirectionMode: barConfig?.shadowDirectionMode ?? "inherit"
+diff -ru a/Modules/DankBar/DankBarBody.qml b/Modules/DankBar/DankBarBody.qml
+--- a/Modules/DankBar/DankBarBody.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/DankBar/DankBarBody.qml	2026-10-16 17:13:42.776592005 +0530
+@@ -297,7 +297,7 @@
+         id: barBlur
+         visible: false
+ 
+-        readonly property bool barHasTransparency: barWindow._backgroundAlpha > 0 && barWindow._backgroundAlpha < 1
++        readonly property bool barHasTransparency: (barWindow._backgroundAlpha > 0 && barWindow._backgroundAlpha < 1) || barWindow.hasWorkspaceWindows
+ 
+         function rebuild() {
+             teardown();
+@@ -454,7 +454,16 @@
+     readonly property color _surfaceContainer: Theme.surfaceContainer
+     readonly property string _barId: barConfig?.id ?? "default"
+     property real _backgroundAlpha: barConfig?.transparency ?? 1.0
+-    readonly property color _bgColor: (FrameTransitionState.effectiveFrameEnabled && usesFrameBarChrome) ? Theme.withAlpha(SettingsData.effectiveFrameColor, SettingsData.frameOpacity) : Theme.withAlpha(_surfaceContainer, _backgroundAlpha)
++    property bool hasWorkspaceWindows: false
++    onHasWorkspaceWindowsChanged: _blurRebuildTimer.restart()
++    property real _windowTintAlpha: hasWorkspaceWindows ? (Theme.isLightMode ? 0.38 : 0.55) : 0
++    Behavior on _windowTintAlpha {
++        NumberAnimation {
++            duration: Theme.mediumDuration
++            easing.type: Easing.OutCubic
++        }
++    }
++    readonly property color _bgColor: (FrameTransitionState.effectiveFrameEnabled && usesFrameBarChrome) ? Theme.withAlpha(SettingsData.effectiveFrameColor, SettingsData.frameOpacity) : Theme.withAlpha(_surfaceContainer, Math.max(_backgroundAlpha, _windowTintAlpha))
+ 
+     function _updateBackgroundAlpha() {
+         const live = SettingsData.barConfigs.find(c => c.id === _barId);
+@@ -521,6 +530,7 @@
+         }
+ 
+         const filtered = CompositorService.filterCurrentWorkspace(CompositorService.sortedToplevels, screenName);
++        hasWorkspaceWindows = filtered.length > 0;
+         for (let i = 0; i < filtered.length; i++) {
+             if (filtered[i]?.maximized) {
+                 hasMaximizedToplevel = true;
+diff -ru a/Modules/DankBar/DankBarContent.qml b/Modules/DankBar/DankBarContent.qml
+--- a/Modules/DankBar/DankBarContent.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/DankBar/DankBarContent.qml	2026-10-16 16:39:19.500917573 +0530
+@@ -1,4 +1,5 @@
+ import QtQuick
++import QtQuick.Effects
+ import Quickshell.Hyprland
+ import Quickshell.I3
+ import Quickshell.Services.SystemTray
+@@ -728,6 +729,15 @@
+ 
+             LeftSection {
+                 id: hLeftSection
++                layer.enabled: !Theme.isLightMode
++                layer.effect: MultiEffect {
++                    shadowEnabled: true
++                    shadowColor: Qt.rgba(0, 0, 0, 0.6)
++                    shadowBlur: 0.35
++                    blurMax: 8
++                    shadowVerticalOffset: 1
++                    shadowHorizontalOffset: 0
++                }
+                 objectName: "leftSection"
+                 edgeIsScreenEdge: !topBarContent.hasAdjacentLeftBarLive
+                 overrideAxisLayout: true
+@@ -762,6 +772,15 @@
+ 
+             RightSection {
+                 id: hRightSection
++                layer.enabled: !Theme.isLightMode
++                layer.effect: MultiEffect {
++                    shadowEnabled: true
++                    shadowColor: Qt.rgba(0, 0, 0, 0.6)
++                    shadowBlur: 0.35
++                    blurMax: 8
++                    shadowVerticalOffset: 1
++                    shadowHorizontalOffset: 0
++                }
+                 objectName: "rightSection"
+                 edgeIsScreenEdge: !topBarContent.hasAdjacentRightBarLive
+                 overrideAxisLayout: true
+@@ -796,6 +815,15 @@
+ 
+             CenterSection {
+                 id: hCenterSection
++                layer.enabled: !Theme.isLightMode
++                layer.effect: MultiEffect {
++                    shadowEnabled: true
++                    shadowColor: Qt.rgba(0, 0, 0, 0.6)
++                    shadowBlur: 0.35
++                    blurMax: 8
++                    shadowVerticalOffset: 1
++                    shadowHorizontalOffset: 0
++                }
+                 objectName: "centerSection"
+                 overrideAxisLayout: true
+                 forceVerticalLayout: false
+diff -ru a/Modules/DankBar/Widgets/WorkspaceSwitcher.qml b/Modules/DankBar/Widgets/WorkspaceSwitcher.qml
+--- a/Modules/DankBar/Widgets/WorkspaceSwitcher.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/DankBar/Widgets/WorkspaceSwitcher.qml	2026-10-16 17:13:42.778394764 +0530
+@@ -1345,8 +1345,12 @@
+                     case "error":
+                     case "err":
+                         return Theme.error;
+-                    case "custom":
+-                        return Theme.safeColor(customColor, customFallbackColor);
++                    case "custom": {
++                        const c = Theme.safeColor(customColor, customFallbackColor);
++                        if (Theme.isLightMode && c.r > 0.9 && c.g > 0.9 && c.b > 0.9)
++                            return Qt.rgba(0, 0, 0, c.a);
++                        return c;
++                    }
+                     default:
+                         return fallbackColor;
+                     }
+diff -ru a/Modules/Dock/DockBody.qml b/Modules/Dock/DockBody.qml
+--- a/Modules/Dock/DockBody.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Modules/Dock/DockBody.qml	2026-10-16 17:02:42.804592554 +0530
+@@ -18,7 +18,7 @@
+     readonly property bool isVertical: SettingsData.dockPosition === SettingsData.Position.Left || SettingsData.dockPosition === SettingsData.Position.Right
+ 
+     property bool autoHide: SettingsData.dockAutoHide || SettingsData.dockSmartAutoHide
+-    property real backgroundTransparency: SettingsData.dockTransparency
++    property real backgroundTransparency: SettingsData.dockTransparency * (Theme.isLightMode ? 0.85 : 0.72)
+     property bool groupByApp: SettingsData.dockGroupByApp
+     readonly property int borderThickness: SettingsData.dockBorderEnabled ? SettingsData.dockBorderThickness : 0
+     readonly property string connectedBarSide: SettingsData.dockPosition === SettingsData.Position.Top ? "top" : SettingsData.dockPosition === SettingsData.Position.Bottom ? "bottom" : SettingsData.dockPosition === SettingsData.Position.Left ? "left" : "right"
+@@ -424,7 +424,7 @@
+     Connections {
+         target: SettingsData
+         function onDockTransparencyChanged() {
+-            dock.backgroundTransparency = SettingsData.dockTransparency;
++            dock.backgroundTransparency = SettingsData.dockTransparency * (Theme.isLightMode ? 0.85 : 0.72);
+         }
+     }
+ 
+diff -ru a/Widgets/BatteryMeter.qml b/Widgets/BatteryMeter.qml
+--- a/Widgets/BatteryMeter.qml	2026-10-07 05:30:00.000000000 +0530
++++ b/Widgets/BatteryMeter.qml	2026-10-16 17:13:42.780551229 +0530
+@@ -32,7 +32,7 @@
+             return BatteryService.levelColor;
+         if (root.lowState)
+             return Theme.error;
+-        return Theme.isLightColor(Theme.primary) === Theme.isLightColor(Theme.surface) ? Theme.surfaceText : Theme.primary;
++        return Theme.isLightColor(Theme.surface) ? Theme.surfaceText : "#ffffff";
+     }
+     readonly property color dimColor: Theme.withAlpha(root.fillColor, root.hovered ? 0.6 : 0.48)
+     readonly property color trackColor: {
+@@ -47,7 +47,7 @@
+             return Theme.isLightColor(Theme.surface) ? Theme.surfaceText : Theme.surface;
+         return Theme.isLightColor(Theme.surface) ? Theme.surface : Theme.surfaceText;
+     }
+-    readonly property int glyphWeight: Theme.fontWeight
++    readonly property int glyphWeight: Font.DemiBold
+     readonly property string numberText: Math.round(root.level).toString()
+     readonly property bool boltVisible: root.charging && root.showBolt
+     readonly property bool numberInside: !root.vertical && root.showNumber && BatteryService.batteryAvailable

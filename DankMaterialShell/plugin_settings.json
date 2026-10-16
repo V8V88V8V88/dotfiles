@@ -7,6 +7,12 @@
   },
   "emojiLauncher": {
     "enabled": true,
-    "recentEmojis": ",😠,󰨵"
+    "recentEmojis": "🐊,,😠,󰨵"
+  },
+  "wallpaperCarousel": {
+    "enabled": true,
+    "cornerRadius": 32,
+    "overlayOpacity": 67,
+    "carouselMode": "wrap"
   }
 }

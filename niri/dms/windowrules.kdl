@@ -23,3 +23,9 @@ window-rule {
 window-rule {
     match app-id="^org.hitchhiker-linux.eva$" is-floating=true
 }
+
+// @id=dms-window-opaque @name=DMS Window Opaque
+window-rule {
+    match app-id="^com\\.danklinux\\.dms$"
+    opacity 1.00
+}

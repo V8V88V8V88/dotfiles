@@ -317,41 +317,22 @@ recent-windows {
     }
 }
 
-window-rule {
-    match app-id="com.mitchellh.ghostty"
-
-    background-effect {
-        blur true
-    }
-}
 // Include dms files
 include "dms/colors.kdl"
 include "dms/layout.kdl"
 include "dms/alttab.kdl"
 include "dms/binds.kdl"
+include "custom-binds.kdl"
 include "dms/outputs.kdl"
 include "dms/cursor.kdl"
 // after the DMS includes so this overrides their generated focus-ring width
 include "focus.kdl"
 
+include "shadow.kdl"
+
 window-rule {
     geometry-corner-radius 16
     clip-to-geometry true
-
-    // opacity on the same golden-ratio scale as DMS: focused 1 - phi^-5, unfocused 1 - phi^-4
-    opacity 0.910
-
-    // xray: blur the wallpaper once and reuse it for every window. Non-xray blur is
-    // re-rendered per window every frame and drops out during open/close animations (stutter).
-    background-effect {
-      blur true
-      xray true
-    }
-}
-
-window-rule {
-    match is-focused=false
-    opacity 0.854
 }
 
 // after the global rules above, so per-app DMS rules (e.g. opaque helium) take precedence
@@ -363,6 +344,17 @@ window-rule {
     match app-id="" title=".*Orchestration*"
     match app-id="" title=".*Discord*"
     opacity 1.0
+}
+
+// Ghostty handles its own transparency (background-opacity), which keeps text fully
+// opaque; niri's window opacity would fade the text too and stack with it.
+window-rule {
+    match app-id="com.mitchellh.ghostty"
+    opacity 1.0
+
+    background-effect {
+        blur true
+    }
 }
 
 layer-rule {
@@ -381,3 +373,15 @@ layer-rule {
     }
 }
 
+// Wallpaper Carousel overlay: blur whatever is behind its dimmed fullscreen backdrop
+// (exact match, so the hidden ":precache" background surface is left alone)
+layer-rule {
+    match namespace="^dms:plugins:wallpaperCarousel$"
+    background-effect {
+        blur true
+    }
+}
+
+
+include "gaps.kdl"
+include "corners.kdl"
