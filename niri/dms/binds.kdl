@@ -13,7 +13,7 @@ binds {
     Mod+V hotkey-overlay-title="Clipboard Manager" { spawn "dms" "ipc" "call" "clipboard" "toggle"; }
     Mod+Y hotkey-overlay-title="Browse Wallpapers" { spawn "dms" "ipc" "call" "dankdash" "wallpaper"; }
     Mod+space hotkey-overlay-title="Spotlight Bar: Open" { spawn "dms" "ipc" "call" "spotlight-bar" "open"; }
-    Print hotkey-overlay-title="Screenshot: Region" { spawn "dms" "screenshot"; }
+    Print hotkey-overlay-title="Screenshot: Screen" { screenshot-screen; }
     Super+X hotkey-overlay-title="Power Menu: Toggle" { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "dms" "ipc" "call" "audio" "decrement" "3"; }
     XF86AudioMicMute allow-when-locked=true { spawn "dms" "ipc" "call" "audio" "micmute"; }
@@ -59,7 +59,7 @@ binds {
     Mod+U { focus-workspace-down; }
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
     Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
-    Alt+XF86Launch1 { screenshot-window; }
+    Alt+XF86Launch1 hotkey-overlay-title="Screenshot: Window" { spawn "dms" "screenshot" "window"; }
     F11 { fullscreen-window; }
     Mod+BracketLeft { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
@@ -122,9 +122,9 @@ binds {
     Mod+WheelScrollLeft { focus-column-left; }
     Mod+WheelScrollRight { focus-column-right; }
     Mod+Shift+P { power-off-monitors; }
-    Ctrl+Print hotkey-overlay-title="Screenshot Screen" { screenshot-screen; }
-    Ctrl+XF86Launch1 { screenshot-screen; }
-    XF86Launch1 { screenshot; }
+    Ctrl+Print hotkey-overlay-title="Screenshot: Region" { screenshot; }
+    Ctrl+XF86Launch1 hotkey-overlay-title="Screenshot: Screen" { spawn "dms" "screenshot" "full"; }
+    XF86Launch1 hotkey-overlay-title="Screenshot: Region" { spawn "dms" "screenshot"; }
     Mod+Shift+E { quit; }
     Super+Return hotkey-overlay-title="Open Terminal" { spawn "ghostty"; }
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }

@@ -5,7 +5,7 @@ layout {
     border {
         on
         width 1
-        active-color "#ffffff33"
-        inactive-color "#ffffff12"
+        active-color "#b7c8e240"
+        inactive-color "#b7c8e214"
     }
 }

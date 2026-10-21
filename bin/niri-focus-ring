@@ -3,9 +3,8 @@
 set -euo pipefail
 colors="$HOME/.config/niri/dms/colors.kdl"
 out="$HOME/.config/niri/focus.kdl"
-alpha="33"
-
-color="#ffffff"
+color=$(awk '/focus-ring/{f=1} f && /active-color/{gsub(/"/,"",$2); print $2; exit}' "$colors")
+[[ $color =~ ^#[0-9a-fA-F]{6}$ ]] || { echo "no focus-ring active-color in $colors" >&2; exit 1; }
 
 tmp=$(mktemp "$out.XXXXXX")
 cat > "$tmp" <<KDL
@@ -16,8 +15,8 @@ layout {
     border {
         on
         width 1
-        active-color "${color}${alpha}"
-        inactive-color "${color}12"
+        active-color "${color}40"
+        inactive-color "${color}14"
     }
 }
 KDL

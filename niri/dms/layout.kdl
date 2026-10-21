@@ -16,8 +16,13 @@ layout {
 }
 
 window-rule {
-    geometry-corner-radius 16
+    geometry-corner-radius 14
     clip-to-geometry true
     tiled-state true
     draw-border-with-background false
+}
+
+blur {
+    passes 3
+    offset 4.6
 }
