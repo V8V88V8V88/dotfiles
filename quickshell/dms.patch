@@ -1,6 +1,6 @@
 diff -ruN a/DCommon/Widgets/StyledText.qml b/DCommon/Widgets/StyledText.qml
---- a/DCommon/Widgets/StyledText.qml	2026-10-21 09:07:05.026209990 +0530
-+++ b/DCommon/Widgets/StyledText.qml	2026-10-21 09:07:05.028444775 +0530
+--- a/DCommon/Widgets/StyledText.qml	2026-10-21 11:04:13.132700782 +0530
++++ b/DCommon/Widgets/StyledText.qml	2026-10-21 11:04:13.135164225 +0530
 @@ -44,7 +44,18 @@
      color: Style.surfaceText
      font.pixelSize: Appearance.fontSize.normal
@@ -22,8 +22,8 @@ diff -ruN a/DCommon/Widgets/StyledText.qml b/DCommon/Widgets/StyledText.qml
      wrapMode: Text.WordWrap
      elide: Text.ElideRight
 diff -ruN a/Modules/DBar/DBarBody.qml b/Modules/DBar/DBarBody.qml
---- a/Modules/DBar/DBarBody.qml	2026-10-21 09:07:05.036221580 +0530
-+++ b/Modules/DBar/DBarBody.qml	2026-10-21 09:07:05.038834976 +0530
+--- a/Modules/DBar/DBarBody.qml	2026-10-21 11:04:13.143211911 +0530
++++ b/Modules/DBar/DBarBody.qml	2026-10-21 11:04:13.145304978 +0530
 @@ -481,7 +481,7 @@
          id: barBlur
          visible: false
@@ -60,8 +60,8 @@ diff -ruN a/Modules/DBar/DBarBody.qml b/Modules/DBar/DBarBody.qml
  
      function _updateShouldHideForWindows() {
 diff -ruN a/Modules/DBar/DBarContent.qml b/Modules/DBar/DBarContent.qml
---- a/Modules/DBar/DBarContent.qml	2026-10-21 09:07:05.047825558 +0530
-+++ b/Modules/DBar/DBarContent.qml	2026-10-21 09:07:05.050010022 +0530
+--- a/Modules/DBar/DBarContent.qml	2026-10-21 11:04:13.152878139 +0530
++++ b/Modules/DBar/DBarContent.qml	2026-10-21 11:04:13.154997749 +0530
 @@ -1,4 +1,5 @@
  import QtQuick
 +import QtQuick.Effects
@@ -164,9 +164,26 @@ diff -ruN a/Modules/DBar/DBarContent.qml b/Modules/DBar/DBarContent.qml
                  edgeIsScreenEdge: !topBarContent.hasAdjacentBottomBarLive
                  overrideAxisLayout: true
                  forceVerticalLayout: true
+diff -ruN a/Modules/DBar/Widgets/Battery.qml b/Modules/DBar/Widgets/Battery.qml
+--- a/Modules/DBar/Widgets/Battery.qml	2026-10-21 11:04:13.163444717 +0530
++++ b/Modules/DBar/Widgets/Battery.qml	2026-10-21 11:04:13.166082281 +0530
+@@ -30,10 +30,10 @@
+     readonly property bool showPower: BatteryService.isCharging ? showPowerCharging : showPowerDischarging
+     readonly property bool critical: SettingsData.batteryCriticalAnimation && BatteryService.isCriticalBattery && !BatteryService.isCharging
+     property real criticalPulse: 0
+-    readonly property color criticalForeground: battery.mixColor(Theme.error, Theme.surface, criticalPulse)
++    readonly property color criticalForeground: battery.mixColor(Theme.error, defaultContentColor, criticalPulse)
+ 
+-    fillColor: critical ? battery.mixColor(defaultFillColor, Theme.error, criticalPulse) : defaultFillColor
+-    contentColor: critical ? battery.mixColor(defaultContentColor, Theme.surface, criticalPulse) : defaultContentColor
++    fillColor: defaultFillColor
++    contentColor: critical ? battery.criticalForeground : defaultContentColor
+ 
+     function mixColor(from, to, progress) {
+         return Qt.rgba(from.r + (to.r - from.r) * progress, from.g + (to.g - from.g) * progress, from.b + (to.b - from.b) * progress, from.a + (to.a - from.a) * progress);
 diff -ruN a/Modules/Dock/DockAppButton.qml b/Modules/Dock/DockAppButton.qml
---- a/Modules/Dock/DockAppButton.qml	2026-10-21 09:07:05.057579040 +0530
-+++ b/Modules/Dock/DockAppButton.qml	2026-10-21 09:07:05.059782074 +0530
+--- a/Modules/Dock/DockAppButton.qml	2026-10-21 11:04:13.174664830 +0530
++++ b/Modules/Dock/DockAppButton.qml	2026-10-21 11:04:13.176938165 +0530
 @@ -404,6 +404,7 @@
          hovered: root.isHovered
          suppressed: mouseArea.pressed || root.dragging
@@ -184,8 +201,8 @@ diff -ruN a/Modules/Dock/DockAppButton.qml b/Modules/Dock/DockAppButton.qml
                  layer.enabled: appData && Paths.isDmsAppId(appData.appId)
                  layer.smooth: true
 diff -ruN a/Modules/Dock/DockHoverBounce.qml b/Modules/Dock/DockHoverBounce.qml
---- a/Modules/Dock/DockHoverBounce.qml	2026-10-21 09:07:05.067528392 +0530
-+++ b/Modules/Dock/DockHoverBounce.qml	2026-10-21 09:07:05.070059254 +0530
+--- a/Modules/Dock/DockHoverBounce.qml	2026-10-21 11:04:13.185496538 +0530
++++ b/Modules/Dock/DockHoverBounce.qml	2026-10-21 11:04:13.187785908 +0530
 @@ -10,7 +10,8 @@
      property int position: SettingsData.Position.Bottom
      property real distance: 40
@@ -197,8 +214,8 @@ diff -ruN a/Modules/Dock/DockHoverBounce.qml b/Modules/Dock/DockHoverBounce.qml
  
      onHoveredChanged: {
 diff -ruN a/Modules/Dock/DockLauncherButton.qml b/Modules/Dock/DockLauncherButton.qml
---- a/Modules/Dock/DockLauncherButton.qml	2026-10-21 09:07:05.078069054 +0530
-+++ b/Modules/Dock/DockLauncherButton.qml	2026-10-21 09:07:05.080472775 +0530
+--- a/Modules/Dock/DockLauncherButton.qml	2026-10-21 11:04:13.196090163 +0530
++++ b/Modules/Dock/DockLauncherButton.qml	2026-10-21 11:04:13.198418260 +0530
 @@ -47,6 +47,7 @@
          hovered: root.isHovered
          suppressed: mouseArea.pressed
@@ -208,8 +225,8 @@ diff -ruN a/Modules/Dock/DockLauncherButton.qml b/Modules/Dock/DockLauncherButto
          distance: root.actualIconSize
      }
 diff -ruN a/Modules/Dock/DockTrashButton.qml b/Modules/Dock/DockTrashButton.qml
---- a/Modules/Dock/DockTrashButton.qml	2026-10-21 09:07:05.089242673 +0530
-+++ b/Modules/Dock/DockTrashButton.qml	2026-10-21 09:07:05.091287007 +0530
+--- a/Modules/Dock/DockTrashButton.qml	2026-10-21 11:04:13.206290832 +0530
++++ b/Modules/Dock/DockTrashButton.qml	2026-10-21 11:04:13.208344253 +0530
 @@ -21,6 +21,7 @@
          hovered: root.isHovered
          suppressed: mouseArea.pressed
@@ -219,8 +236,8 @@ diff -ruN a/Modules/Dock/DockTrashButton.qml b/Modules/Dock/DockTrashButton.qml
          distance: root.actualIconSize
      }
 diff -ruN a/Modules/SurfaceWidgets/SurfaceStrip.qml b/Modules/SurfaceWidgets/SurfaceStrip.qml
---- a/Modules/SurfaceWidgets/SurfaceStrip.qml	2026-10-21 09:07:05.099564626 +0530
-+++ b/Modules/SurfaceWidgets/SurfaceStrip.qml	2026-10-21 09:07:05.102356206 +0530
+--- a/Modules/SurfaceWidgets/SurfaceStrip.qml	2026-10-21 11:04:13.215643289 +0530
++++ b/Modules/SurfaceWidgets/SurfaceStrip.qml	2026-10-21 11:04:13.217783536 +0530
 @@ -176,8 +176,8 @@
      Behavior on magnificationProgress {
          enabled: !SettingsData.reduceMotion && Theme.currentAnimationSpeed !== SettingsData.AnimationSpeed.None
@@ -233,8 +250,8 @@ diff -ruN a/Modules/SurfaceWidgets/SurfaceStrip.qml b/Modules/SurfaceWidgets/Sur
      }
      readonly property var sizes: {
 diff -ruN a/Widgets/BatteryMeter.qml b/Widgets/BatteryMeter.qml
---- a/Widgets/BatteryMeter.qml	2026-10-21 09:07:05.111147827 +0530
-+++ b/Widgets/BatteryMeter.qml	2026-10-21 09:07:05.113553971 +0530
+--- a/Widgets/BatteryMeter.qml	2026-10-21 11:04:13.225034512 +0530
++++ b/Widgets/BatteryMeter.qml	2026-10-21 11:04:13.227223405 +0530
 @@ -42,7 +42,7 @@
              return BatteryService.levelColor;
          if (root.lowState)
