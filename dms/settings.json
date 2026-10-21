@@ -517,5 +517,7 @@
   "osdWorkspaceEnabled": false,
   "desktopWidgetInstances": [],
   "powerActionConfirm": false,
-  "matugenSpec": "dms"
+  "matugenSpec": "dms",
+  "matugenSourceMode": "dominant",
+  "matugenSeedColor": ""
 }
